@@ -14,9 +14,12 @@ st.set_page_config(page_title="Loan Advisory Assistant", layout="centered")
 st.title("💬 Loan Advisory Assistant")
 
 # Ensure the API key is set
-if not os.getenv("GOOGLE_API_KEY"):
-    st.error("Please set the GOOGLE_API_KEY environment variable.")
+api_key = os.getenv("GOOGLE_API_KEY")
+if not api_key:
+    st.error("GOOGLE_API_KEY not found in .env file. Please ensure the .env file exists and contains the correct key.")
     st.stop()
+else:
+    st.write("API key loaded successfully.")
 
 # Initialize model
 llm = ChatGoogleGenerativeAI(
