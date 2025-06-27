@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💬 Loan Advisory Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --dark: #1b263b;
+            --light: #f8f9fa;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .main-container {
+            height: calc(100vh - 80px);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        
+        .user-message {
+            background-color: white;
+            border-radius: 18px 18px 0 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .bot-message {
+            background-color: var(--primary-light);
+            color: white;
+            border-radius: 18px 18px 18px 0;
+        }
+        
+        .typing-indicator {
+            display: inline-flex;
+            padding: 12px 16px;
+            border-radius: 18px;
+            background-color: #f0f2f5;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            margin: 0 2px;
+            background-color: #9ca3af;
+            border-radius: 50%;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+        
+        .suggested-question {
+            transition: all 0.2s ease;
+        }
+        
+        .suggested-question:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .gradient-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+        
+        /* Custom scrollbar */
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chat-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 10px;
+        }
+        
+        .chat-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+</head>
+<body class="overflow-hidden">
+    <div class="container mx-auto px-4 h-full max-w-6xl flex flex-col">
+        <!-- Header -->
+        <div class="gradient-header text-white rounded-xl p-4 my-4 shadow-lg animate__animated animate__fadeIn">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold flex items-center">
+                        <i class="fas fa-comments mr-3"></i> Loan Advisory Assistant
+                    </h1>
+                    <p class="text-blue-100 text-sm mt-1">Smart, friendly, and tailored loan guidance</p>
+                </div>
+                <div class="hidden md:block">
+                    <div class="flex space-x-2">
+                        <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-xs">Gemini Flash</span>
+                        <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-xs">AI Powered</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main content area -->
+        <div class="main-container flex flex-col lg:flex-row gap-4 pb-4">
+            <!-- Main chat area -->
+            <div class="flex-1 bg-white rounded-xl shadow-md overflow-hidden flex flex-col animate__animated animate__fadeInUp">
+                <!-- Chat header -->
+                <div class="bg-gray-50 px-4 py-3 border-b flex items-center justify-between">
+                    <h2 class="font-semibold text-gray-700 flex items-center text-sm md:text-base">
+                        <i class="fas fa-robot text-blue-500 mr-2"></i> Loan Advisor
+                    </h2>
+                    <div class="flex items-center space-x-3">
+                        <button id="clear-chat" class="text-gray-500 hover:text-gray-700 transition text-sm">
+                            <i class="fas fa-trash-alt mr-1"></i> Clear
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Chat messages -->
+                <div class="chat-container p-4 space-y-3" id="chat-box">
+                    {% for user_msg, bot_msg in chat_history %}
+                        {% if user_msg %}
+                            <div class="user-message p-3 max-w-[85%] ml-auto animate__animated animate__fadeInRight">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2 shadow">
+                                        <i class="fas fa-user text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-800 text-sm md:text-base">{{ user_msg }}</p>
+                                        <p class="text-xs text-gray-500 mt-1 text-right">{{ now }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if bot_msg %}
+                            <div class="bot-message p-3 max-w-[85%] animate__animated animate__fadeInLeft">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0 bg-white text-blue-500 rounded-full w-8 h-8 flex items-center justify-center mr-2 shadow">
+                                        <i class="fas fa-robot text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-white text-sm md:text-base">{{ bot_msg }}</p>
+                                        <p class="text-xs text-blue-100 mt-1">{{ now }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <!-- Suggested questions -->
+                <div id="suggested-questions" class="px-4 pb-2 hidden">
+                    <div class="grid grid-cols-2 gap-2 mb-2">
+                        <button class="suggested-question bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs px-2 py-1 rounded-lg transition">
+                            What loan options do I have?
+                        </button>
+                        <button class="suggested-question bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs px-2 py-1 rounded-lg transition">
+                            How much can I borrow?
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Input area -->
+                <div class="border-t p-3 bg-gray-50">
+                    <form id="chat-form" class="flex gap-2">
+                        <div class="flex-1 relative">
+                            <input type="text" name="user_input" id="user-input" 
+                                   class="w-full border border-gray-300 rounded-xl px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm md:text-base" 
+                                   placeholder="Ask about loans, eligibility, rates..." autocomplete="off">
+                            <button type="button" class="absolute right-3 top-2 text-gray-400 hover:text-blue-500">
+                            </button>
+                        </div>
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl transition flex items-center justify-center">
+                            <i class="fas fa-paper-plane text-sm"></i>
+                            <span class="ml-1 hidden md:inline text-sm">Send</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatForm = document.getElementById('chat-form');
+            const userInput = document.getElementById('user-input');
+            const chatBox = document.getElementById('chat-box');
+            const clearChatBtn = document.getElementById('clear-chat');
+            const suggestedQuestions = document.getElementById('suggested-questions');
+            
+            // Get current time in HH:MM format
+            function getCurrentTime() {
+                const now = new Date();
+                return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+            
+            // Scroll to bottom of chat
+            function scrollToBottom() {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+            
+            // Show typing indicator
+            function showTypingIndicator() {
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'bot-message p-3 max-w-[85%] animate__animated animate__fadeInLeft';
+                typingDiv.innerHTML = `
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 bg-white text-blue-500 rounded-full w-8 h-8 flex items-center justify-center mr-2 shadow">
+                            <i class="fas fa-robot text-xs"></i>
+                        </div>
+                        <div class="typing-indicator">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
+                `;
+                chatBox.appendChild(typingDiv);
+                scrollToBottom();
+                return typingDiv;
+            }
+            
+            // Hide typing indicator
+            function hideTypingIndicator(indicator) {
+                if (indicator && indicator.parentNode) {
+                    indicator.parentNode.removeChild(indicator);
+                }
+            }
+            
+            // Show suggested questions when chat is empty
+            function toggleSuggestedQuestions() {
+                if (chatBox.children.length <= 1) { // Only has greeting or empty
+                    suggestedQuestions.classList.remove('hidden');
+                } else {
+                    suggestedQuestions.classList.add('hidden');
+                }
+            }
+            
+            // Initialize
+            scrollToBottom();
+            toggleSuggestedQuestions();
+            
+            // Handle form submission
+            chatForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const message = userInput.value.trim();
+                if (!message) return;
+                
+                // Add user message to chat
+                addMessageToChat('user', message);
+                userInput.value = '';
+                suggestedQuestions.classList.add('hidden');
+                
+                // Show typing indicator
+                const typingIndicator = showTypingIndicator();
+                
+                // Send to server
+                axios.post('/', new URLSearchParams({ user_input: message }))
+                    .then(response => {
+                        hideTypingIndicator(typingIndicator);
+                        const botResponse = response.data.response;
+                        addMessageToChat('bot', botResponse);
+                        scrollToBottom();
+                    })
+                    .catch(error => {
+                        hideTypingIndicator(typingIndicator);
+                        console.error('Error:', error);
+                        addMessageToChat('bot', "Sorry, I encountered an error. Please try again.");
+                        scrollToBottom();
+                    });
+            });
+            
+            // Clear chat history
+            clearChatBtn.addEventListener('click', function() {
+                axios.post('/', new URLSearchParams({ action: 'clear_chat' }))
+                    .then(() => {
+                        chatBox.innerHTML = '';
+                        // Add the initial greeting back
+                        addMessageToChat('bot', "👋 Hello! I'm your personal loan advisor. Let's find the best loan for your needs.");
+                        scrollToBottom();
+                        toggleSuggestedQuestions();
+                    })
+                    .catch(error => {
+                        console.error('Error clearing chat:', error);
+                    });
+            });
+            
+            // Handle suggested questions
+            document.querySelectorAll('.suggested-question').forEach(button => {
+                button.addEventListener('click', function() {
+                    userInput.value = this.textContent;
+                    chatForm.dispatchEvent(new Event('submit'));
+                });
+            });
+            
+            // Helper function to add messages to chat
+            function addMessageToChat(sender, message) {
+                const time = getCurrentTime();
+                if (sender === 'user') {
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = 'user-message p-3 max-w-[85%] ml-auto animate__animated animate__fadeInRight';
+                    msgDiv.innerHTML = `
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center mr-2 shadow">
+                                <i class="fas fa-user text-xs"></i>
+                            </div>
+                            <div>
+                                <p class="text-gray-800 text-sm md:text-base">${message}</p>
+                                <p class="text-xs text-gray-500 mt-1 text-right">${time}</p>
+                            </div>
+                        </div>
+                    `;
+                    chatBox.appendChild(msgDiv);
+                } else {
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = 'bot-message p-3 max-w-[85%] animate__animated animate__fadeInLeft';
+                    msgDiv.innerHTML = `
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 bg-white text-blue-500 rounded-full w-8 h-8 flex items-center justify-center mr-2 shadow">
+                                <i class="fas fa-robot text-xs"></i>
+                            </div>
+                            <div>
+                                <p class="text-white text-sm md:text-base">${message}</p>
+                                <p class="text-xs text-blue-100 mt-1">${time}</p>
+                            </div>
+                        </div>
+                    `;
+                    chatBox.appendChild(msgDiv);
+                }
+                scrollToBottom();
+            }
+            
+            // Auto-focus input field
+            userInput.focus();
+            
+            // Handle window resize to maintain layout
+            window.addEventListener('resize', function() {
+                scrollToBottom();
+            });
+        });
+    </script>
+</body>
+</html>

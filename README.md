@@ -1,33 +1,23 @@
-# 💬 Loan Advisory Assistant
+# 💬 AI Loan Advisory Assistant
 
-Smart, friendly, and tailored loan guidance powered by **Google Gemini**, **LangChain**, and **Streamlit**.
-
----
-
-## 🚀 Overview
-
-**Loan Advisory Assistant** is an AI-powered chatbot built using the latest LLM technology. It interacts conversationally to help users gather and understand loan-related details—such as loan type, amount, credit score, and more—step by step.
-
-This assistant:
-- Asks one question at a time for clarity
-- Maintains context with memory
-- Guides users toward choosing the best loan, without suggesting providers directly
+This is a conversational web app built with Flask and LangChain that helps users find the best loan options through an intelligent step-by-step dialogue powered by Google Gemini (`gemini-2.0-flash`).
 
 ---
 
-## 🛠️ Tech Stack
+## 🚀 Features
 
-- [Streamlit](https://streamlit.io/)
-- [LangChain](https://www.langchain.com/)
-- [Google Gemini Flash (via `langchain_google_genai`)](https://python.langchain.com/docs/integrations/llms/google_genai/)
-- [Python dotenv](https://pypi.org/project/python-dotenv/)
+- Conversational AI assistant for loan advisory
+- Asks one question at a time to gather all necessary loan-related information
+- Stores and manages chat history using Flask session
+- Uses LangChain memory for maintaining conversation context
+- Integration with Google Generative AI (Gemini)
+- Clear chat functionality
+- Web interface using HTML templates
 
 ---
 
-## 📦 Installation
+## 📋 Prerequisites
 
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/Milank-12345/Chatbot.git
-cd Chatbot
+- Python 3.9+
+- A Google API key with access to Generative AI (Gemini)
+- `.env` file with:
