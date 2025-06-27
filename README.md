@@ -1,4 +1,4 @@
-# 💬 AI Loan Advisory Assistant
+# 💬 Loan Advisory Assistant
 
 This is a conversational web app built with Flask and LangChain that helps users find the best loan options through an intelligent step-by-step dialogue powered by Google Gemini (`gemini-2.0-flash`).
 
